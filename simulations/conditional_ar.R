@@ -8,6 +8,8 @@ library(surveillance)
 library(INLA)
 library(mvtnorm)
 library(MASS)
+library(sparseMVN)
+library(Matrix)
 
 Q_ar1 <- function(N, sigma, rho){
     Q <- matrix(0, nrow=N, ncol=N)
@@ -23,32 +25,29 @@ Q_ar1 <- function(N, sigma, rho){
 
 
 Q_iCAR <- function(N, sigma, rho, graph){
-    mat <- graph
+    mat <- graph 
     diag(mat) <- 0.
     mat <- mat * -rho
-    diag(mat) <- 1.
-    mat * sigma**-1
+    diag(mat) <- rowSums(graph)
+    mat * (sigma**-1)
 }
 
 load("~/Documents/county_forecasting/data/sp_data.RData")
 df2 <- df2[df2@data$STATEFP %in% c("48", "22"),]
-mat <- poly2adjmat(df2)
+graph <- poly2adjmat(df2)
 
-#Create Q from an adjacency matrix
-n_delta_i <- rowSums(mat)
-Q <- mat * -1
-diag(Q) <- n_delta_i
+N <- nrow(df2@data)
+rho <- .99
+sigma <- .7
+Q <- Q_iCAR(N, sigma, rho, graph)
 
+system.time(obs <- rmvnorm(1, sigma=ginv(Q)))
+print(mean(c(obs)))
 
-# N <- nrow(df2@data)
-# max_J <- max(rowSums(mat))
-# rho_indv <- .999999999
-# rho <- (rho_indv / max_J)
-# sigma <- 1.2
-# Q <- Q_iCAR(N, sigma, rho, mat)
-
-Sigma <- ginv(Q)
-obs <- rmvnorm(1, sigma=Sigma)
+# now with sparse matricies
+system.time(obs <- rmvn.sparse(1, rep(0, nrow(Q)), 
+                               Cholesky(Matrix(Q, sparse=TRUE)), T))
+print(mean(c(obs)))
 
 # simulate some data to visualize
 df2@data$data <- c(obs)
