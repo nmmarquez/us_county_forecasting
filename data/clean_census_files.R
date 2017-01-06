@@ -4,6 +4,7 @@ library(data.table)
 library(rgdal)
 library(maptools)
 library(leaflet)
+library(surveillance)
 
 # download the 2015 shape file from us census 
 file_zip <- tempfile()
@@ -28,9 +29,16 @@ remove_locs <- c("Puerto Rico"="72", "Hawaii"="15", "Alaska"="02", "Guam"="66",
                  "American Somoa"="60", "Virgin Islands"="78", "Mariana"="69")
 
 df2 <- df2[!(df2@data$STATEFP %in% remove_locs),]
+rownames(df2@data) <- 1:nrow(df2@data)
 
 # do we have it?
 length(unique(df2@data$STATEFP)) == 49
+
+# remove islands with no neighbors
+adj_mat <- poly2adjmat(df2)
+islands <- which(rowSums(adj_mat) == 0)
+df2 <- df2[-islands,]
+rownames(df2@data) <- 1:nrow(df2@data)
 
 # simulate some data to visualize
 df2@data$data <- rnorm(nrow(df2@data))
