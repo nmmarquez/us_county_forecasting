@@ -24,25 +24,28 @@ Q_ar1 <- function(N, sigma, rho){
 }
 
 
-Q_iCAR <- function(N, sigma, rho, graph){
-    mat <- graph 
-    diag(mat) <- 0.
-    mat <- mat * -rho
-    diag(mat) <- rowSums(graph)
-    mat * (sigma**-1)
+Q_pCAR <- function(N, sigma, rho, graph){
+    sigma**-1 * (diag(rowSums(graph)) - rho * graph)
 }
 
+Q_lCAR <- function(N, sigma, rho, graph){
+    D <- diag(rowSums(graph))
+    I <- diag(nrow(graph))
+    sigma**-1 * (rho * (D - graph) + (1 - rho) * I)
+}
+
+
 load("~/Documents/county_forecasting/data/sp_data.RData")
-df2 <- df2[df2@data$STATEFP %in% c("48", "22"),]
+#df2 <- df2[df2@data$STATEFP %in% c("48", "22"),]
 graph <- poly2adjmat(df2)
 
 N <- nrow(df2@data)
 rho <- .99
-sigma <- .7
-Q <- Q_iCAR(N, sigma, rho, graph)
+sigma <- 1.
+Q <- Q_lCAR(N, sigma, rho, graph)
 
-system.time(obs <- rmvnorm(1, sigma=ginv(Q)))
-print(mean(c(obs)))
+#system.time(obs <- rmvnorm(1, sigma=ginv(Q)))
+#print(mean(c(obs)))
 
 # now with sparse matricies
 system.time(obs <- rmvn.sparse(1, rep(0, nrow(Q)), 
