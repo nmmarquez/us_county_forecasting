@@ -5,3 +5,5 @@
 *.o
 *.Rhistory
 *.RData
+*.pdf
+
