@@ -85,5 +85,5 @@ for(x in 1:nrow(c_xy)){
         if( rbinom(n=1, size=1, prob=prob_missing)==1) c_xy[x,y] = NA
     }}
 true_abundance =  sum( exp(beta0 + epsilon_xy) )
-
+head(c_xy)
 
