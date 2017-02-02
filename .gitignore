@@ -6,4 +6,5 @@
 *.Rhistory
 *.RData
 *.pdf
-
+*.Rproj
+.Rproj.user
