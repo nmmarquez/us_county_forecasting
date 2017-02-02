@@ -1,10 +1,5 @@
 rm(list=ls())
-library(sp)
-library(data.table)
-library(rgdal)
-library(maptools)
-library(leaflet)
-library(surveillance)
+pacman::p_load(sp, data.table, rgdal, maptools, leaflet, surveillance)
 
 # download the 2015 shape file from us census 
 file_zip <- tempfile()
@@ -61,7 +56,7 @@ map1<-leaflet() %>%
                 weight = 0.3, 
                 smoothFactor = 0.2,
                 popup = popup)
-map1
+#map1
 
 # save data
 df2@data$data <- NULL
