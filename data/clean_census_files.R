@@ -60,4 +60,4 @@ map1<-leaflet() %>%
 
 # save data
 df2@data$data <- NULL
-save(df2, file="~/Documents/county_forecasting/data/sp_data.RData")
+save(df2, file="~/Documents/us_county_forecasting/data/sp_data.RData")

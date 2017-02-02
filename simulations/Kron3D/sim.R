@@ -1,7 +1,7 @@
 rm(list=ls())
 pacman::p_load(ar.matrix, TMB, data.table, sp, surveillance, Matrix)
 
-load("~/Documents/county_forecasting/data/sp_data.RData")
+load("~/Documents/us_county_forecasting/data/sp_data.RData")
 
 # get unique demographic indicators iqnoring sex for now
 geoid <- as.character(df2@data$GEOID)
